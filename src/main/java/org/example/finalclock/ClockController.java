@@ -22,18 +22,19 @@ public class ClockController {
     private boolean isMinuteClicked;
     private boolean isResetClicked;
     private boolean isAlarmClicked;
-    private boolean isStop;
+    private boolean isOff;
     private int countHourClicks = 0;
     private int countMinuteClicks = 0;
     private int countAlarmMinuteClicks = 0;
     private int countAlarmHourClicks = 0;
+    private short countToggleClicked;
     private Time timeChangeable;
     private Time alarmTime;
     @FXML
     private Button stopRinging;
     @FXML
     protected void onStopRingingButtonClick() {
-        isStop = true;
+        isOff = true;
     }
     @FXML
     protected void onAlarmButtonClick() {
@@ -44,6 +45,7 @@ public class ClockController {
         } else {
             isAlarmToggled = false;
         }
+        countToggleClicked++;
     }
     @FXML
     protected void onHourButtonClick() {
@@ -54,7 +56,9 @@ public class ClockController {
         isMinuteClicked = true;
     }
     @FXML
-    protected void onResetButtonClick() { isResetClicked = true;}
+    protected void onResetButtonClick() {
+        isResetClicked = true;
+    }
     public void initialize() {
         Timeline timeline = new Timeline(new KeyFrame(Duration.millis(10), this::updateTime));
         timeline.setCycleCount(Timeline.INDEFINITE);
@@ -117,10 +121,17 @@ public class ClockController {
                 isResetClicked = false;
             }
         }
-        stopRinging.setDisable(true);
-        if (isStop) {
+        if (isAlarmOn && alarmTime != null && !isAlarmToggled) {
+            stopRinging.setDisable(false);
+        } else {
+            stopRinging.setDisable(true);
+        }
+        if (isOff) {
             alarmTime = null;
-            isStop = false;
+            isOff = false;
+        }
+        if (countToggleClicked == 0) {
+            alarmTime = null;
         }
         if (alarmTime != null) {
             alarmLabel.setText("Alarm will ring in:\n"+alarmTime.getCurrentTime());
@@ -132,7 +143,6 @@ public class ClockController {
             && (timeChangeable.getHours() == alarmTime.getHours())
             && (timeChangeable.getMinutes() == alarmTime.getMinutes())
             && isAlarmOn) {
-                stopRinging.setDisable(false);
                 System.out.println(alarmTime.toString() + " al = loc "+ timeChangeable.toString());
                 alarmLabel.setText("Alarm is RINGING");
         }
