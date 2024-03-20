@@ -143,7 +143,6 @@ public class ClockController {
             && (timeChangeable.getHours() == alarmTime.getHours())
             && (timeChangeable.getMinutes() == alarmTime.getMinutes())
             && isAlarmOn) {
-                System.out.println(alarmTime.toString() + " al = loc "+ timeChangeable.toString());
                 alarmLabel.setText("Alarm is RINGING");
         }
 
